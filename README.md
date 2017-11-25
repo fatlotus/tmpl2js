@@ -12,8 +12,29 @@ in your own work.
 
 ## Example
 
-```go
+On the server side (`main.go`):
 
+```go
+type Person struct {
+	Name string
+}
+
+func MyApp(w http.ResponseWriter, r *http.Request) {
+	// Parse the template
+	tmpl, _ := template.New("").Parse(`Hello, {{.Name}}!`)
+
+	// Compile it into a minified JavaScript function
+	function, _ := tmpl2js.ConvertHTML(tmpl, &Person{})
+	w.Write([]byte("<script>var _tmpl = " + function + "</script>" +
+	               "<script src="app.js"></script>"))
+}
+```
+
+On the client side (`app.js`):
+
+```js
+var result = _tmpl({Name: "World"});
+console.log(result);  // Prints "Hello, World!"
 ```
 
 ## License
