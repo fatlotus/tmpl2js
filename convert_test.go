@@ -46,6 +46,7 @@ var positive = []string{
 	`Int: {{1}} float: {{1.2}} string: {{"hello"}} Bools: {{true}} {{false}}`,
 	`Variable: {{$x := .F}}{{$x.G}}`,
 	`Args: {{.I 3 4}}`,
+	`Comparison: {{lt 1 2}}`,
 }
 
 func TestConvertHTML(t *testing.T) {

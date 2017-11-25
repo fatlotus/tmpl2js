@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"strings"
 
-	html "html/template"
-	text "text/template"
+	html_template "html/template"
+	text_template "text/template"
 	"text/template/parse"
 )
 
@@ -24,6 +24,9 @@ var header = minify(`
 		'>': '&gt;',
 		'"': '&quot;',
 		"'": '&#39;'
+	};
+	$.$lt = function(a, b) {
+		return a < b;
 	};
 	$.$_html_template_htmlescaper = $_html_template_attrescaper = function(s) {
 		return (""+s).replace(/[&<>'"]/g, function(c) {return MAP[c];});
@@ -44,13 +47,19 @@ var footer = minify(`
 	return out
 })`)
 
+// Compiles the given template parse tree into a JavaScript function.
+//
+// It accepts a single argument, which is the context used for the template.
 func ConvertTree(tree *parse.Tree, example_context interface{}) (string, error) {
 	root_type := ast.NewType(reflect.TypeOf(example_context))
 	code, err := ast.Process(tree, ast.NewScope(root_type))
 	return header + code + footer, err
 }
 
-func ConvertText(tmpl *text.Template, example_context interface{}) (string, error) {
+// Compiles a parsed *template.Template into a JavaScript function.
+//
+// It accepts a single argument ctx, which is the context used for the template.
+func ConvertText(tmpl *text_template.Template, example_context interface{}) (string, error) {
 	js := "(_tmpls={},"
 	for _, tmpl := range tmpl.Templates() {
 		new_js, err := ConvertTree(tmpl.Tree, example_context)
@@ -62,7 +71,10 @@ func ConvertText(tmpl *text.Template, example_context interface{}) (string, erro
 	return js + "_tmpls[\"\"])", nil
 }
 
-func ConvertHTML(tmpl *html.Template, example_context interface{}) (string, error) {
+// Compiles a parsed *template.Template into a JavaScript function.
+//
+// It accepts a single argument ctx, which is the context used for the template.
+func ConvertHTML(tmpl *html_template.Template, example_context interface{}) (string, error) {
 	js := "(_tmpls={},"
 	for _, tmpl := range tmpl.Templates() {
 		new_js, err := ConvertTree(tmpl.Tree, example_context)
