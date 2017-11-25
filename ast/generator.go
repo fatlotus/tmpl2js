@@ -39,9 +39,9 @@ func (l Local) expr() string {
 	return l.Name
 }
 
-func (c Context) expr() string { return "this" }
+func (c Context) expr() string { return "ctx" }
 
-func (g Global) expr() string { return "window" }
+func (g Global) expr() string { return "$" }
 
 func (sl SetLocal) stmt() string {
 	return fmt.Sprintf("var %s=%s;", sl.Name, sl.Value.expr())
@@ -66,11 +66,11 @@ func (l Loop) stmt() string {
 		"var it=%s;"+
 		"for(var i=0;it&&i<it.length;i++){%s;any=true;}"+
 		"if(!any){%s}",
-		l.Subject.expr(), l.wrap("it[i]", sv, l.Body), l.wrap("this", "", l.Else))
+		l.Subject.expr(), l.wrap("it[i]", sv, l.Body), l.wrap("ctx", "", l.Else))
 }
 
 func (c Conditional) stmt() string {
-	call := "this"
+	call := "ctx"
 	if c.SetContext {
 		call = "v"
 	}
@@ -79,19 +79,19 @@ func (c Conditional) stmt() string {
 		sv = fmt.Sprintf("var %s=v;", c.CondVar)
 	}
 	return fmt.Sprintf("var v=%s;if(v){%s}else{%s}",
-		c.Conditional.expr(), c.wrap(call, sv, c.Body), c.wrap("this", "", c.Else))
+		c.Conditional.expr(), c.wrap(call, sv, c.Body), c.wrap("ctx", "", c.Else))
 }
 
 func (i Include) stmt() string {
 	if i.Context != nil {
-		return fmt.Sprintf("out+=_render_(%s, %s);", quote(i.Name), i.Context)
+		return fmt.Sprintf("out+=_tmpls[%s](%s);", quote(i.Name), i.Context.expr())
 	} else {
-		return fmt.Sprintf("out+=_render_(%s);", quote(i.Name))
+		return fmt.Sprintf("out+=_tmpls[%s]();", quote(i.Name))
 	}
 }
 
 func (s Scope) wrap(callee string, before string, inner []Statement) string {
-	return fmt.Sprintf("(function(){%s%s}).call(%s)", before, catStmts(inner), callee)
+	return fmt.Sprintf("(function(ctx){%s%s})(%s)", before, catStmts(inner), callee)
 }
 
 func catStmts(s []Statement) string {
