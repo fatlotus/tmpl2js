@@ -150,7 +150,7 @@ func (sc *Scope) FieldNamed(name string) (string, Type) {
 		if sc.Parent != nil {
 			return sc.Parent.FieldNamed(name)
 		} else {
-			panic(fmt.Sprintf("no global variable %s", name))
+			panic(fmt.Sprintf("no global variable %s (candidates %#v)", name, sc.Variables))
 		}
 	}
 	return name, typ

@@ -16,7 +16,7 @@ func Example() {
 	tmpl, _ := template.New("").Parse(`Hello, {{.Name}}!`)
 
 	// Compile it into a minified JavaScript function
-	function, _ := tmpl2js.ConvertHTML(tmpl, &Person{})
+	function, _ := tmpl2js.ConvertHTML(tmpl, &Person{}, nil)
 
 	// Evaluate the JavaScript by invoking it
 	_, result, _ := otto.Run(function + "({Name: 'World'})")

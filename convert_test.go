@@ -47,6 +47,7 @@ var positive = []string{
 	`Variable: {{$x := .F}}{{$x.G}}`,
 	`Args: {{.I 3 4}}`,
 	`Comparison: {{lt 1 2}}`,
+	`Helper: {{helper 42}}`,
 }
 
 func TestConvertHTML(t *testing.T) {
@@ -57,19 +58,24 @@ func TestConvertHTML(t *testing.T) {
 		E: []string{"E", "E2", "E3"},
 		F: struct{ G string }{G: "GggGG"},
 	}
+	helpers := html.FuncMap{"helper": func(x int) int { return 2 * x }}
 
 	for _, test := range positive {
 		t.Log(test)
 
 		// Render via html/template.
-		tmpl := html.Must(html.New("").Parse(test))
+		tmpl, err := html.New("").Funcs(helpers).Parse(test)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		buf := bytes.Buffer{}
 		if err := tmpl.Execute(&buf, ctx); err != nil {
 			t.Fatal(err)
 		}
 
 		// Package up the template as a Template, plus an example type.
-		js, err := tmpl2js.ConvertHTML(tmpl, &Context{})
+		js, err := tmpl2js.ConvertHTML(tmpl, &Context{}, helpers)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -82,7 +88,8 @@ func TestConvertHTML(t *testing.T) {
 
 		// Stub out the given method on the object.
 		js += "(x=" + string(data) + ",x.H=function() {return this.F},"
-		js += "x.I=function(a, b){return a + b},x)"
+		js += "x.I=function(a, b){return a + b},"
+		js += "x.$helper=function(x){return 2 * x},x)"
 		t.Log(js)
 
 		// Evaluate the resulting bundle, with the associated functions.
@@ -105,19 +112,24 @@ func TestConvertText(t *testing.T) {
 		E: []string{"E", "E2", "E3"},
 		F: struct{ G string }{G: "GggGG"},
 	}
+	helpers := text.FuncMap{"helper": func(x int) int { return 2 * x }}
 
 	for _, test := range positive {
 		t.Log(test)
 
 		// Render via text/template.
-		tmpl := text.Must(text.New("").Parse(test))
+		tmpl, err := text.New("").Funcs(helpers).Parse(test)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		buf := bytes.Buffer{}
 		if err := tmpl.Execute(&buf, ctx); err != nil {
 			t.Fatal(err)
 		}
 
 		// Package up the template as a Template, plus an example type.
-		js, err := tmpl2js.ConvertText(tmpl, &Context{})
+		js, err := tmpl2js.ConvertText(tmpl, &Context{}, helpers)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -130,7 +142,8 @@ func TestConvertText(t *testing.T) {
 
 		// Stub out the given method on the object.
 		js += "(x=" + string(data) + ",x.H=function() {return this.F},"
-		js += "x.I=function(a, b){return a + b},x)"
+		js += "x.I=function(a, b){return a + b},"
+		js += "x.$helper=function(x){return 2 * x},x)"
 		t.Log(js)
 
 		// Evaluate the resulting bundle, with the associated functions.
@@ -165,7 +178,7 @@ var negative = []string{
 func TestFailure(t *testing.T) {
 	for _, test := range negative {
 		tmpl := html.Must(html.New("").Parse(test))
-		_, err := tmpl2js.ConvertHTML(tmpl, &Context{})
+		_, err := tmpl2js.ConvertHTML(tmpl, &Context{}, nil)
 		if err == nil {
 			t.Fatalf("expecting error from: %s", test)
 		}

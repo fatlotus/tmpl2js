@@ -50,19 +50,23 @@ var footer = minify(`
 // Compiles the given template parse tree into a JavaScript function.
 //
 // It accepts a single argument, which is the context used for the template.
-func ConvertTree(tree *parse.Tree, example_context interface{}) (string, error) {
+func ConvertTree(tree *parse.Tree, example_context interface{}, func_map map[string]interface{}) (string, error) {
 	root_type := ast.NewType(reflect.TypeOf(example_context))
-	code, err := ast.Process(tree, ast.NewScope(root_type))
+	scope := ast.NewScope(root_type)
+	for key, value := range func_map {
+		scope.Variables["$"+key] = ast.NewType(reflect.TypeOf(value))
+	}
+	code, err := ast.Process(tree, scope)
 	return header + code + footer, err
 }
 
 // Compiles a parsed *template.Template into a JavaScript function.
 //
 // It accepts a single argument ctx, which is the context used for the template.
-func ConvertText(tmpl *text_template.Template, example_context interface{}) (string, error) {
+func ConvertText(tmpl *text_template.Template, example_context interface{}, func_map text_template.FuncMap) (string, error) {
 	js := "(_tmpls={},"
 	for _, tmpl := range tmpl.Templates() {
-		new_js, err := ConvertTree(tmpl.Tree, example_context)
+		new_js, err := ConvertTree(tmpl.Tree, example_context, func_map)
 		if err != nil {
 			return "", err
 		}
@@ -74,10 +78,10 @@ func ConvertText(tmpl *text_template.Template, example_context interface{}) (str
 // Compiles a parsed *template.Template into a JavaScript function.
 //
 // It accepts a single argument ctx, which is the context used for the template.
-func ConvertHTML(tmpl *html_template.Template, example_context interface{}) (string, error) {
+func ConvertHTML(tmpl *html_template.Template, example_context interface{}, func_map html_template.FuncMap) (string, error) {
 	js := "(_tmpls={},"
 	for _, tmpl := range tmpl.Templates() {
-		new_js, err := ConvertTree(tmpl.Tree, example_context)
+		new_js, err := ConvertTree(tmpl.Tree, example_context, func_map)
 		if err != nil {
 			return "", err
 		}
