@@ -25,9 +25,12 @@ var header = minify(`
 		'"': '&quot;',
 		"'": '&#39;'
 	};
-	$.$lt = function(a, b) {
-		return a < b;
-	};
+	$.$le = function(a, b) { return a <= b };
+	$.$lt = function(a, b) { return a < b };
+	$.$gt = function(a, b) { return a > b };
+	$.$ge = function(a, b) { return a >= b };
+	$.$eq = function(a, b) { return a == b };
+	$.$ne = function(a, b) { return a != b };
 	$.$_html_template_htmlescaper = $_html_template_attrescaper = function(s) {
 		return (""+s).replace(/[&<>'"]/g, function(c) {return MAP[c];});
 	};

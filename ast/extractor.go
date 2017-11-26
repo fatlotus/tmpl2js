@@ -86,6 +86,26 @@ func NewScope(ctx Type) *Scope {
 				Args:   []Type{number{}, number{}},
 				Return: boolean{},
 			},
+			"$le": function{
+				Args:   []Type{number{}, number{}},
+				Return: boolean{},
+			},
+			"$ne": function{
+				Args:   []Type{number{}, number{}},
+				Return: boolean{},
+			},
+			"$gt": function{
+				Args:   []Type{number{}, number{}},
+				Return: boolean{},
+			},
+			"$ge": function{
+				Args:   []Type{number{}, number{}},
+				Return: boolean{},
+			},
+			"$eq": function{
+				Args:   []Type{number{}, number{}},
+				Return: boolean{},
+			},
 			"$printf": function{
 				Args:   []Type{str{}, str{}},
 				Return: str{},
