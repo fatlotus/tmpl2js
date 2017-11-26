@@ -72,7 +72,3 @@ result.Greet = function(greeting) {
 }
 console.log(result);  // Prints "Good morning, World, from JavaScript!"
 ```
-
-## License
-
-All rights reserved, for the moment.
