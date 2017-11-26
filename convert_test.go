@@ -166,7 +166,7 @@ var negative = []string{
 	`{{$x := 0}}{{$x.NotExist}}`,
 	`{{$x := true}}{{$x.NotExist}}`,
 	`{{$x := ""}}{{$x.NotExist}}`,
-	`{{$x := ($y := "")}}{{$x.NotExist}}`,
+	`{{($y := "").NotExist}}`,
 	`{{.I.NotExist}}`,
 	`{{range .I}}{{end}}`,
 	`{{.C.D}}`,
