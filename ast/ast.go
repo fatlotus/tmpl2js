@@ -8,8 +8,8 @@ package ast
 //  Method       (a.b(...))
 //  Local        (a)
 //  SetLocal     (a = (...))
-//  Context      this
-//  Global       window
+//  Context      ctx
+//  Global       $
 type Expression interface {
 	expr() string
 	typ() Type

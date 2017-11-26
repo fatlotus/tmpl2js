@@ -47,7 +47,8 @@ var positive = []string{
 	`Variable: {{$x := .F}}{{$x.G}}`,
 	`Args: {{.I 3 4}}`,
 	`Comparison: {{lt 1 2}}`,
-	`Helper: {{helper 42}}`,
+	`Helper: {{helper 42}} also: {{ 42 | helper }}`,
+	`Value of assignment: {{$x := ($y := 2)}}{{$x}}`,
 }
 
 func TestConvertHTML(t *testing.T) {
@@ -173,12 +174,34 @@ var negative = []string{
 	`{{range 0}}{{end}}`,
 	`{{range ""}}{{end}}`,
 	`{{range .}}{{end}}`,
+	`{{range $}}{{end}}`,
+	`{{fake}}`,
 }
 
-func TestFailure(t *testing.T) {
+func TestFailureText(t *testing.T) {
+	helpers := text.FuncMap{"fake": func() int { return 42 }}
 	for _, test := range negative {
-		tmpl := html.Must(html.New("").Parse(test))
-		_, err := tmpl2js.ConvertHTML(tmpl, &Context{}, nil)
+		t.Log(test)
+		tmpl, err := text.New("").Funcs(helpers).Parse(test)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = tmpl2js.ConvertText(tmpl, &Context{}, nil)
+		if err == nil {
+			t.Fatalf("expecting error from: %s", test)
+		}
+		t.Log(err.Error())
+	}
+}
+
+func TestFailureHTML(t *testing.T) {
+	helpers := html.FuncMap{"fake": func() int { return 42 }}
+	for _, test := range negative {
+		tmpl, err := html.New("").Funcs(helpers).Parse(test)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = tmpl2js.ConvertHTML(tmpl, &Context{}, nil)
 		if err == nil {
 			t.Fatalf("expecting error from: %s", test)
 		}

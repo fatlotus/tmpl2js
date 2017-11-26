@@ -31,9 +31,7 @@ func (f Field) typ() Type {
 func (f Local) typ() Type    { return f.T }
 func (f SetLocal) typ() Type { return f.Value.typ() }
 func (f Context) typ() Type  { return f.T }
-func (f Global) typ() Type {
-	return f.S
-}
+func (f Global) typ() Type   { return f.S }
 
 func (f function) String() string {
 	args := ""
@@ -121,20 +119,8 @@ func (n number) Iterate() Type {
 }
 
 // Pretty-prints the current global scope.
-func (s *Scope) String() string {
-	props := ""
-	first := true
-	for k, t := range s.Variables {
-		if first {
-			first = false
-		} else {
-			props += ", "
-		}
-		props += k + ": " + t.String()
-	}
+func (s *Scope) String() string { return "$" }
 
-	return "{" + props + "}"
-}
 func (s *Scope) child() *Scope {
 	return &Scope{
 		Context:   s.Context,

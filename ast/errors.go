@@ -13,7 +13,7 @@ type contextError struct {
 
 func (c contextError) Error() string {
 	loc, ctx := c.Tree.ErrorContext(c.Node)
-	return fmt.Sprintf("javascript/template: %s: executing at \"%s\": %s",
+	return fmt.Sprintf("tmpl2js: %s: executing at \"%s\": %s",
 		loc, ctx, c.Msg)
 }
 
