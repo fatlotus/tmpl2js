@@ -38,9 +38,11 @@ var header = minify(`
 		return encodeURIComponent("" + s);
 	};
 	$.$_html_template_jsvalescaper = $.$html_template_jsstrescaper = function(s) {
-		console.warning("This application may have XSS vulnerabilities. Check for {{ }} inside JavaScript.");
-		return s;
-	}; 
+		throw new Error(
+			"This application is trying to embed template values inside a " +
+			"script tag {{ }}, which is unsupported."
+		);
+	};
 	$.$json = function(s) {
 		return JSON.stringify("" + s);
 	};
