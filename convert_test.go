@@ -48,7 +48,7 @@ var positive = []string{
 	`Args: {{.I 3 4}}`,
 	`Comparison: {{lt 1 2}}`,
 	`Helper: {{helper 42}} also: {{ 42 | helper }}`,
-	`Value of assignment: {{$x := ($y := 2)}}{{$x}}`,
+	`Value of assignment: {{$x := ($y := 2)}}{{$x}} {{($y := .F).G}}`,
 }
 
 func TestConvertHTML(t *testing.T) {

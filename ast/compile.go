@@ -82,13 +82,17 @@ func processExpr(n parse.Node, sc *Scope) Expression {
 		}
 
 		return callee
-	case *parse.IdentifierNode:
-		_, typ := sc.FieldNamed(n.Ident)
-		return Local{Name: "$" + n.Ident, T: typ}
 	case *parse.VariableNode:
 		_, typ := sc.FieldNamed(n.Ident[0])
 		callee := Expression(&Local{Name: n.Ident[0], T: typ})
 		for _, field := range n.Ident[1:] {
+			callee = fieldOrMethod(callee, field, nil)
+		}
+
+		return callee
+	case *parse.ChainNode:
+		callee := processExpr(n.Node, sc)
+		for _, field := range n.Field {
 			callee = fieldOrMethod(callee, field, nil)
 		}
 
