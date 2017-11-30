@@ -52,48 +52,49 @@ var footer = minify(`
 	return out
 })`)
 
-// Compiles the given template parse tree into a JavaScript function.
+// ConvertTree converts the given template parse tree into a JavaScript
+// function.
 //
 // It accepts a single argument, which is the context used for the template.
-func ConvertTree(tree *parse.Tree, example_context interface{}, func_map map[string]interface{}) (string, error) {
-	root_type := ast.NewType(reflect.TypeOf(example_context))
-	scope := ast.NewScope(root_type)
-	for key, value := range func_map {
+func ConvertTree(tree *parse.Tree, exampleContext interface{}, funcMap map[string]interface{}) (string, error) {
+	rootType := ast.NewType(reflect.TypeOf(exampleContext))
+	scope := ast.NewScope(rootType)
+	for key, value := range funcMap {
 		scope.Variables["$"+key] = ast.NewType(reflect.TypeOf(value))
 	}
 	code, err := ast.Process(tree, scope)
 	return header + code + footer, err
 }
 
-// Compiles a parsed *template.Template into a JavaScript function.
+// ConvertText compiles a parsed *template.Template into a JavaScript function.
 //
 // It accepts a single argument ctx, which is the context used for the template.
-func ConvertText(tmpl *text_template.Template, example_context interface{}, func_map text_template.FuncMap) (string, error) {
+func ConvertText(tmpl *text_template.Template, exampleContext interface{}, funcMap text_template.FuncMap) (string, error) {
 	js := "(_tmpls={},"
 	name := ""
 	for _, tmpl := range tmpl.Templates() {
-		new_js, err := ConvertTree(tmpl.Tree, example_context, func_map)
+		newJs, err := ConvertTree(tmpl.Tree, exampleContext, funcMap)
 		if err != nil {
 			return "", err
 		}
-		js += "_tmpls[\"" + tmpl.Tree.Name + "\"]=" + new_js + ","
+		js += "_tmpls[\"" + tmpl.Tree.Name + "\"]=" + newJs + ","
 		name = tmpl.Tree.Name
 	}
 	return js + "_tmpls[\"" + name + "\"])", nil
 }
 
-// Compiles a parsed *template.Template into a JavaScript function.
+// ConvertHTML compiles a parsed *template.Template into a JavaScript function.
 //
 // It accepts a single argument ctx, which is the context used for the template.
-func ConvertHTML(tmpl *html_template.Template, example_context interface{}, func_map html_template.FuncMap) (string, error) {
+func ConvertHTML(tmpl *html_template.Template, exampleContext interface{}, funcMap html_template.FuncMap) (string, error) {
 	js := "(_tmpls={},"
 	name := ""
 	for _, tmpl := range tmpl.Templates() {
-		new_js, err := ConvertTree(tmpl.Tree, example_context, func_map)
+		newJs, err := ConvertTree(tmpl.Tree, exampleContext, funcMap)
 		if err != nil {
 			return "", err
 		}
-		js += "_tmpls[\"" + tmpl.Tree.Name + "\"]=" + new_js + ","
+		js += "_tmpls[\"" + tmpl.Tree.Name + "\"]=" + newJs + ","
 		name = tmpl.Tree.Name
 	}
 	return js + "_tmpls[\"" + name + "\"])", nil

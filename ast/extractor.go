@@ -28,6 +28,7 @@ func newMethod(recv bool, t reflect.Type) Type {
 	return f
 }
 
+// NewType creates a Type from a reflect.Type.
 func NewType(t reflect.Type) Type {
 	switch t.Kind() {
 	case reflect.Ptr:
@@ -75,7 +76,7 @@ func NewType(t reflect.Type) Type {
 	}
 }
 
-// Creates a global template context ready for the given root object.
+// NewScope creates a global template context ready for the given root object.
 // (Primarily, this means setting things like $ and lt).
 func NewScope(ctx Type) *Scope {
 	return &Scope{

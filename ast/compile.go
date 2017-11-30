@@ -219,6 +219,7 @@ func processStmt(n parse.Node, sc *Scope) Statement {
 	}
 }
 
+// Process converts the given parse tree into a JavaScript string.
 func Process(t *parse.Tree, sc *Scope) (r string, err error) {
 	defer func() {
 		exc := recover()

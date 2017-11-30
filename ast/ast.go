@@ -78,7 +78,7 @@ type Append struct {
 	Expression Expression
 }
 
-// A loop iterates over the given subject; if it never loops, then
+// Loop iterates over the given subject; if it never loops, then
 // the else branch is run.
 type Loop struct {
 	Subject Expression

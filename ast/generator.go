@@ -10,12 +10,10 @@ func (l *Literal) expr() string {
 	} else if l.BoolVal != nil {
 		if *l.BoolVal {
 			return "true"
-		} else {
-			return "false"
 		}
-	} else {
-		return quote(*l.StringVal)
+		return "false"
 	}
+	return quote(*l.StringVal)
 }
 func (f Method) expr() string {
 	lbl, _ := f.Subject.typ().FieldNamed(f.Name)
@@ -85,9 +83,8 @@ func (c Conditional) stmt() string {
 func (i Include) stmt() string {
 	if i.Context != nil {
 		return fmt.Sprintf("out+=_tmpls[%s](%s);", quote(i.Name), i.Context.expr())
-	} else {
-		return fmt.Sprintf("out+=_tmpls[%s]();", quote(i.Name))
 	}
+	return fmt.Sprintf("out+=_tmpls[%s]();", quote(i.Name))
 }
 
 func (s Scope) wrap(callee string, before string, inner []Statement) string {

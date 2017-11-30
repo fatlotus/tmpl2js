@@ -82,7 +82,7 @@ func (o object) FieldNamed(s string) (string, Type) {
 	}
 	return label, typ
 }
-func (f object) Iterate() Type {
+func (o object) Iterate() Type {
 	panic("Objects are not iterable")
 }
 
@@ -129,21 +129,21 @@ func (s *Scope) child() *Scope {
 	}
 }
 
-// Returns the given field of the current scope.
-func (sc *Scope) FieldNamed(name string) (string, Type) {
-	typ, ok := sc.Variables[name]
+// FieldNamed returns the given field of the current scope.
+func (s *Scope) FieldNamed(name string) (string, Type) {
+	typ, ok := s.Variables[name]
 	if !ok {
-		if sc.Parent != nil {
-			return sc.Parent.FieldNamed(name)
-		} else {
-			panic(fmt.Sprintf("no global variable %s (candidates %#v)", name, sc.Variables))
+		if s.Parent != nil {
+			return s.Parent.FieldNamed(name)
 		}
+		panic(fmt.Sprintf("no global variable %s (candidates %#v)", name,
+			s.Variables))
 	}
 	return name, typ
 }
 
-// Allows the user to iterate over $.
-func (f *Scope) Iterate() Type {
+// Iterate throws, since the user cannot iterate over $.
+func (s *Scope) Iterate() Type {
 	panic(fmt.Errorf("cannot Iterate over global object"))
 }
 
