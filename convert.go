@@ -70,14 +70,16 @@ func ConvertTree(tree *parse.Tree, example_context interface{}, func_map map[str
 // It accepts a single argument ctx, which is the context used for the template.
 func ConvertText(tmpl *text_template.Template, example_context interface{}, func_map text_template.FuncMap) (string, error) {
 	js := "(_tmpls={},"
+	name := ""
 	for _, tmpl := range tmpl.Templates() {
 		new_js, err := ConvertTree(tmpl.Tree, example_context, func_map)
 		if err != nil {
 			return "", err
 		}
 		js += "_tmpls[\"" + tmpl.Tree.Name + "\"]=" + new_js + ","
+		name = tmpl.Tree.Name
 	}
-	return js + "_tmpls[\"\"])", nil
+	return js + "_tmpls[\"" + name + "\"])", nil
 }
 
 // Compiles a parsed *template.Template into a JavaScript function.
@@ -85,12 +87,14 @@ func ConvertText(tmpl *text_template.Template, example_context interface{}, func
 // It accepts a single argument ctx, which is the context used for the template.
 func ConvertHTML(tmpl *html_template.Template, example_context interface{}, func_map html_template.FuncMap) (string, error) {
 	js := "(_tmpls={},"
+	name := ""
 	for _, tmpl := range tmpl.Templates() {
 		new_js, err := ConvertTree(tmpl.Tree, example_context, func_map)
 		if err != nil {
 			return "", err
 		}
 		js += "_tmpls[\"" + tmpl.Tree.Name + "\"]=" + new_js + ","
+		name = tmpl.Tree.Name
 	}
-	return js + "_tmpls[\"\"])", nil
+	return js + "_tmpls[\"" + name + "\"])", nil
 }
