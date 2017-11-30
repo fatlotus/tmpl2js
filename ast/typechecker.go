@@ -58,7 +58,7 @@ func (f function) Iterate() Type {
 func (o object) String() string {
 	props := ""
 	first := true
-	for s, _ := range o.Fields {
+	for s := range o.Fields {
 		label, typ := o.FieldNamed(s)
 
 		if first {
