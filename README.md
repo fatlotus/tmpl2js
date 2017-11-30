@@ -1,6 +1,7 @@
 # text/template ↝ JavaScript
 
 [![codecov](https://codecov.io/gh/fatlotus/tmpl2js/branch/master/graph/badge.svg)](https://codecov.io/gh/fatlotus/tmpl2js)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/fatlotus/tmpl2js)
 
 The `tmpl2js` package compiles Golang templates (from the `text/template`
 package) into executable JavaScript. This way, developers can build responsive
